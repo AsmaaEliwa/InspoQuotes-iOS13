@@ -40,25 +40,26 @@ class QuoteTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
+   
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return quotesToShow.count + 1 // so we can have one more cell 
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "QuoteCell", for: indexPath)
+        if indexPath.row < quotesToShow.count{
+            cell.textLabel?.text = quotesToShow[indexPath.row]
+        }else{
+            cell.textLabel?.text = "Get More Quoutes"
+            cell.textLabel?.textColor = .systemTeal
+            cell.accessoryType = .disclosureIndicator
+        }
+        cell.textLabel?.numberOfLines = 0 // to make the quote text fit
         return cell
     }
-    */
+    
 
     /*
     // Override to support conditional editing of the table view.
