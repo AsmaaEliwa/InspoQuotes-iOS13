@@ -10,7 +10,8 @@ import UIKit
 import StoreKit
 class QuoteTableViewController: UITableViewController ,SKPaymentTransactionObserver{
     let userDefault = UserDefaults.standard
-
+    let webSocket = WebSocketManager()
+    @IBOutlet weak var cancelButton: UIButton?
     let productId = "com.londonappbrewery.InspoQuotes.moreQuotes" // the same product id on the devolper account
 
 
@@ -39,6 +40,9 @@ class QuoteTableViewController: UITableViewController ,SKPaymentTransactionObser
         if userDefault.bool(forKey: "isPurched"){
             showNewQuotes()
             navigationItem.setRightBarButton(nil, animated: false)
+            webSocket.connect()
+            cancelButton?.center = view.center
+
         }
         
         // Uncomment the following line to preserve selection between presentations
