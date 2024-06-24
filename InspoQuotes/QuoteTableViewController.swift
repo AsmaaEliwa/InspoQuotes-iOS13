@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import StoreKit
+class QuoteTableViewController: UITableViewController ,SKPaymentTransactionObserver{
+    let userDefault = UserDefaults.standard
 
-class QuoteTableViewController: UITableViewController {
+    let productId = "com.londonappbrewery.InspoQuotes.moreQuotes" // the same product id on the devolper account
+
+
     
     var quotesToShow = [
         "Our greatest glory is not in never falling, but in rising every time we fall. — Confucius",
@@ -30,7 +35,12 @@ class QuoteTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        SKPaymentQueue.default().add(self)
+        if userDefault.bool(forKey: "isPurched"){
+            showNewQuotes()
+            navigationItem.setRightBarButton(nil, animated: false)
+        }
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -43,7 +53,10 @@ class QuoteTableViewController: UITableViewController {
    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return quotesToShow.count + 1 // so we can have one more cell 
+        if userDefault.bool(forKey: "isPurched"){
+            return quotesToShow.count
+        }
+        return quotesToShow.count + 1 // so we can have one more cell
     }
 
     
@@ -59,8 +72,41 @@ class QuoteTableViewController: UITableViewController {
         cell.textLabel?.numberOfLines = 0 // to make the quote text fit
         return cell
     }
-    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == quotesToShow.count{
+            print("Buy Quotes")
+            buyMoreQuotes()
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 
+    func buyMoreQuotes(){
+        if SKPaymentQueue.canMakePayments(){
+            let paymentRequest = SKMutablePayment()
+            paymentRequest.productIdentifier = productId
+            SKPaymentQueue.default().add(paymentRequest)
+            
+        }else{
+            print("cant pay")
+        }
+    }
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        for transaction in transactions {
+            if transaction.transactionState == .purchased{
+                showNewQuotes()
+            }else if  transaction.transactionState == .failed{
+                print("was not able to purch")
+            }else if transaction.transactionState == .restored{
+                showNewQuotes()
+            }
+            SKPaymentQueue.default().finishTransaction(transaction)
+        }
+    }
+    func showNewQuotes(){
+        userDefault.setValue(true, forKey: "isPurched")
+        quotesToShow.append(contentsOf: premiumQuotes)
+        tableView.reloadData()
+    }
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -111,7 +157,7 @@ class QuoteTableViewController: UITableViewController {
     
     
     @IBAction func restorePressed(_ sender: UIBarButtonItem) {
-        
+        SKPaymentQueue.default().restoreCompletedTransactions()
     }
 
 
