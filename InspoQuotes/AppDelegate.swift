@@ -7,10 +7,19 @@
 //
 
 import UIKit
-
+import PushKit
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
+class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate  {
+    func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
+        let deviceToken = pushCredentials.token.map { String(format: "%02x", $0) }.joined()
+    }
+    
+    func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
+         print("Received VoIP push notification")
+         // Handle incoming VoIP push notification
+         // For example, display a CallKit UI or start a VoIP call
+         completion()
+     }
     var window: UIWindow?
 
 
