@@ -49,7 +49,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate  {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if url.host == "Product" {
+            if let priductId = url.pathComponents.last {
+                //navigate to the product view Controller
+            }
+        }
+        return true
+    }
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb, let url = userActivity.webpageURL
+        else{
+            return false
+        }
+        let componants = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        for componant in componants?.queryItems ?? [] {
+            print(componant)
+        }
+        return true
+    }
 }
 
